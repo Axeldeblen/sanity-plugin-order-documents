@@ -31,7 +31,7 @@ class OrderDocuments extends React.Component {
     const length = this.state.documents.length;
 
     const newDocuments = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types] | order (${
+      `*[!(_id in path("drafts.**")) && _type == $types && i18n_lang == "en"] | order (${
         this.state.field.value
       } asc, order asc, _updatedAt desc)[${length}...${length + PAGE_SIZE}]`,
       { types: this.state.type.value }
@@ -68,14 +68,17 @@ class OrderDocuments extends React.Component {
   };
 
   refreshDocuments = async () => {
-    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types])`, {
+    console.log('refresh docs')
+    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && i18n_lang == "en"])`, {
       types: this.state.type.value,
     });
 
     const documents = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
+      `*[!(_id in path("drafts.**")) && _type == $types && i18n_lang == "en"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
       { types: this.state.type.value }
     );
+
+    console.log(      { types: this.state.type.value })
 
     this.setState({ documents, count });
 
@@ -103,12 +106,13 @@ Override existing data? This is a one-time operation and cannot be reversed.`
   };
 
   handleTypeChange = async ({ value, label }) => {
-    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types])`, {
+    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && i18n_lang == "en"])`, {
       types: value,
     });
+    console.log('handle type change')
 
     const documents = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
+      `*[!(_id in path("drafts.**")) && _type == $types && i18n_lang == "en"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
       { types: value }
     );
 
