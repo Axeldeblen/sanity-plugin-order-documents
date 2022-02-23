@@ -1,7 +1,7 @@
 {
   "name": "sanity-plugin-order-documents-intl-input",
-  "version": "0.0.20",
-  "description": "A Sanity Studio plugin that helps you order your documents via drag-and-drop with the intl-input plugin.",
+  "version": "0.0.21",
+  "description": "A Sanity Studio plugin that helps you order your documents via drag-and-drop with the document-internationalization plugin.",
   "main": "build/index.js",
   "scripts": {
     "start": "babel src -d build --copy-files --watch",
