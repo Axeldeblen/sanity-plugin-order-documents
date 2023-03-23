@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import { DEFAULT_FIELD_LABEL, DEFAULT_FIELD_VALUE } from "../../data";
+import { DEFAULT_FIELD_LABEL, DEFAULT_FIELD_VALUE, LOCALES, LOCALE_META } from "../../data";
 import styles from "../../index.css";
 import { Tooltip } from "react-tippy";
 import QuestionIcon from "../atoms/QuestionIcon";
@@ -8,7 +8,7 @@ import RefreshIcon from "../atoms/RefreshIcon";
 
 class TypeSection extends React.Component {
   render() {
-    const { documents, type, types, fields, handleTypeChange, handleFieldChange, refreshTypes } =
+    const { documents, locale, type, types, fields, handleLocaleChange, handleTypeChange, handleFieldChange, refreshTypes } =
       this.props;
 
     if (!documents) {
@@ -22,6 +22,11 @@ class TypeSection extends React.Component {
     const selectorTypes = types.map(({ name, title }) => ({
       value: name,
       label: title,
+    }));
+
+    const localeOptions = LOCALES.map((lang) => ({
+      value: lang,
+      label: LOCALE_META[lang].name,
     }));
 
     const showFields =
@@ -67,7 +72,16 @@ class TypeSection extends React.Component {
         <hr className={styles.orderDocumentsHr} />
         <div className={styles.orderDocumentsSubheading}>
           <p>
-            <strong>Step 1: Choose a Type</strong>
+            <strong>Step 1: Choose a Language</strong>
+          </p>
+          <button className={styles.orderDocumentsRefreshButton} onClick={refreshTypes}>
+            <RefreshIcon title="Refresh Types" />
+          </button>
+        </div>
+        <Select options={localeOptions} isSearchable onChange={handleLocaleChange} value={locale} />
+        <div className={styles.orderDocumentsSubheading}>
+          <p>
+            <strong>Step 2: Choose a Type</strong>
           </p>
           <button className={styles.orderDocumentsRefreshButton} onClick={refreshTypes}>
             <RefreshIcon title="Refresh Types" />

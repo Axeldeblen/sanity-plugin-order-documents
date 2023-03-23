@@ -29,7 +29,7 @@ class DraggableSection extends React.Component {
         <hr className={styles.orderDocumentsRule} />
         <div className={styles.orderDocumentsSubheading}>
           <p>
-            <strong>Step 2: Drag and Drop to Re-order</strong>
+            <strong>Step 3: Drag and Drop to Re-order</strong>
           </p>
           <button className={styles.orderDocumentsRefreshButton} onClick={refreshDocuments}>
             <RefreshIcon title="Refresh Documents" />
