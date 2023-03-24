@@ -19,7 +19,7 @@ class OrderDocuments extends React.Component {
     documents: [],
     types: [],
     type: { label: "", value: "" },
-    locale: { label: '', value: '' },
+    locale: { label: "English", value: "en" },
     field: { label: DEFAULT_FIELD_LABEL, value: DEFAULT_FIELD_VALUE },
     fields: [],
   };
@@ -93,24 +93,28 @@ class OrderDocuments extends React.Component {
     if (shouldShowWarning) {
       shouldProceed = window.confirm(
         `It looks like you are already storing data for:
- • Type: ${type.label}
- • Field: ${field.label}
+          • Type: ${type.label}
+          • Field: ${field.label}
 
-Override existing data? This is a one-time operation and cannot be reversed.`
+          Override existing data? This is a one-time operation and cannot be reversed.`
       );
     }
 
     return shouldProceed;
   };
 
-  handleTypeChange = async ({ value, label }) => {
-    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${this.state.locale.value}"])`, {
-      types: value,
-    });
+  handleDropdownChange = async ({ fieldName, value, label }) => {
+    const type = fieldName === 'locale' ? this.state.type.value : value
+    const locale = fieldName === 'locale' ? value: this.state.locale.value;
+
+    const count = await client.fetch(
+      `count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}"])`, 
+      { types: type }
+    );
 
     const documents = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${this.state.locale.value}"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
-      { types: value }
+      `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
+      { types: type }
     );
 
     const shouldProceed = this.isSafeToProceed(documents, this.state.field, { value, label });
@@ -137,7 +141,7 @@ Override existing data? This is a one-time operation and cannot be reversed.`
         }
       }
 
-      this.setState({ type: { value, label }, documents, count }, () => {
+      this.setState({ [fieldName]: { value, label }, documents, count }, () => {
         this.getFields();
       });
 
@@ -207,7 +211,7 @@ Override existing data? This is a one-time operation and cannot be reversed.`
             <div className={styles.orderDocumentsInnerWrapper}>
               <TypeSection
                 {...this.state}
-                handleTypeChange={this.handleTypeChange}
+                handleDropdownChange={this.handleDropdownChange}
                 handleFieldChange={this.handleFieldChange}
                 refreshTypes={this.refreshTypes}
               />

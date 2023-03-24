@@ -8,7 +8,7 @@ import RefreshIcon from "../atoms/RefreshIcon";
 
 class TypeSection extends React.Component {
   render() {
-    const { documents, locale, type, types, fields, handleLocaleChange, handleTypeChange, handleFieldChange, refreshTypes } =
+    const { documents, locale, type, types, fields, handleDropdownChange, handleFieldChange, refreshTypes } =
       this.props;
 
     if (!documents) {
@@ -78,7 +78,7 @@ class TypeSection extends React.Component {
             <RefreshIcon title="Refresh Types" />
           </button>
         </div>
-        <Select options={localeOptions} isSearchable onChange={handleLocaleChange} value={locale} />
+        <Select options={localeOptions} isSearchable onChange={(e) => handleDropdownChange({fieldName: "locale", ...e})} value={locale} />
         <div className={styles.orderDocumentsSubheading}>
           <p>
             <strong>Step 2: Choose a Type</strong>
@@ -87,7 +87,7 @@ class TypeSection extends React.Component {
             <RefreshIcon title="Refresh Types" />
           </button>
         </div>
-        <Select options={selectorTypes} isSearchable onChange={handleTypeChange} value={type} />
+        <Select options={selectorTypes} isSearchable onChange={(e) => handleDropdownChange({fieldName: "type", ...e})} value={type} />
       </>
     );
   }
