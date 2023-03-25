@@ -32,7 +32,7 @@ class OrderDocuments extends React.Component {
     const length = this.state.documents.length;
 
     const newDocuments = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${this.state.locale.value}"] | order (${
+      `*[!(_id in path("drafts.**")) && _type == $types && ("${this.state.locale.value}" in languageList || "all" == languageList)] | order (${
         this.state.field.value
       } asc, order asc, _updatedAt desc)[${length}...${length + PAGE_SIZE}]`,
       { types: this.state.type.value }
@@ -69,12 +69,12 @@ class OrderDocuments extends React.Component {
   };
 
   refreshDocuments = async () => {
-    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${this.state.locale.value}"])`, {
+    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && ("${this.state.locale.value}" in languageList || "all" == languageList)])`, {
       types: this.state.type.value,
     });
 
     const documents = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${this.state.locale.value}"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
+      `*[!(_id in path("drafts.**")) && _type == $types && ("${this.state.locale.value}" in languageList || "all" == languageList)] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
       { types: this.state.type.value }
     );
 
@@ -108,12 +108,12 @@ class OrderDocuments extends React.Component {
     const locale = fieldName === 'locale' ? value : this.state.locale.value;
 
     const count = await client.fetch(
-      `count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}"])`, 
+      `count(*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList)])`, 
       { types: type }
     );
 
     const documents = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
+      `*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList)] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
       { types: type }
     );
 
@@ -184,7 +184,7 @@ class OrderDocuments extends React.Component {
         ],
       }),
     });
-    
+
     await Promise.all([setOrder(card1._id, afterIndex, this.state.field.value), setOrder(card2._id, beforeIndex, this.state.field.value)]);
   };
 
