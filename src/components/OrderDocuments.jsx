@@ -105,7 +105,7 @@ class OrderDocuments extends React.Component {
 
   handleDropdownChange = async ({ fieldName, value, label }) => {
     const type = fieldName === 'locale' ? this.state.type.value : value
-    const locale = fieldName === 'locale' ? value: this.state.locale.value;
+    const locale = fieldName === 'locale' ? value : this.state.locale.value;
 
     const count = await client.fetch(
       `count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}"])`, 
@@ -184,23 +184,8 @@ class OrderDocuments extends React.Component {
         ],
       }),
     });
-
-    const [documentsMatchingCard1, documentsMatchingCard2] = await Promise.all([client.fetch(
-      `*[_id match $id]`,
-      { id: card1._id }
-    ), client.fetch(
-      `*[_id match $id]`,
-      { id: card2._id }
-    )]);
-
-    await Promise.all([
-      ...documentsMatchingCard1.map(({ _id }) => {
-        return setOrder(_id, afterIndex, this.state.field.value);
-      }),
-      ...documentsMatchingCard2.map(({ _id }) => {
-        return setOrder(_id, beforeIndex, this.state.field.value);
-      })
-    ]);
+    
+    await Promise.all([setOrder(card1._id, afterIndex, this.state.field.value), setOrder(card2._id, beforeIndex, this.state.field.value)]);
   };
 
   render() {
