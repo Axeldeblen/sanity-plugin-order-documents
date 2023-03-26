@@ -107,18 +107,25 @@ class OrderDocuments extends React.Component {
     const type = fieldName === 'locale' ? this.state.type.value : value
     const locale = fieldName === 'locale' ? value : this.state.locale.value;
 
-    const count = await client.fetch(
-      `count(*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList) && (__i18n_lang == 'en' || __i18n_lang == "${locale}")])`, 
-      { types: type }
-    );
+    let count;
+    let documents;
 
-    let documents = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList) && (__i18n_lang == 'en' || __i18n_lang == "${locale}")] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
-      { types: type }
-    );
+    if (type === 'promotionFresh') {
+      count = await client.fetch(
+        `count(*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList) && (__i18n_lang == 'en' || __i18n_lang == "${locale}")])`, 
+        { types: type }
+      );
+      documents = await client.fetch(
+        `*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList) && (__i18n_lang == 'en' || __i18n_lang == "${locale}")] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
+        { types: type }
+      );
 
-    const filteredDocumentIds = documents.map(document => document.__i18n_base?._ref).filter(document => document !== undefined)
-    documents = documents.filter(document => !filteredDocumentIds.includes(document._id))
+      const filteredDocumentIds = documents.map(document => document.__i18n_base?._ref).filter(document => document !== undefined)
+      documents = documents.filter(document => !filteredDocumentIds.includes(document._id))
+    } else {
+      count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "en"])`, { types: value, }); 
+      documents = await client.fetch( `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "en"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`, { types: value } );
+    }
 
     const shouldProceed = this.isSafeToProceed(documents, this.state.field, { value, label });
 
