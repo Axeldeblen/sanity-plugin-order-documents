@@ -106,6 +106,13 @@ class OrderDocuments extends React.Component {
   handleDropdownChange = async ({ fieldName, value, label }) => {
     const type = fieldName === 'locale' ? this.state.type.value : value
     const locale = fieldName === 'locale' ? value : this.state.locale.value;
+    
+    if (type === '') {
+      this.setState({ [fieldName]: { value, label } }, () => {
+        this.getFields();
+      });
+      return;
+    }
 
     let count;
     let documents;
