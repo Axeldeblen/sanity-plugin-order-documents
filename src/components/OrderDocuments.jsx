@@ -108,14 +108,17 @@ class OrderDocuments extends React.Component {
     const locale = fieldName === 'locale' ? value : this.state.locale.value;
 
     const count = await client.fetch(
-      `count(*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList)])`, 
+      `count(*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList) && (__i18n_lang == 'en' || __i18n_lang == "${locale}")])`, 
       { types: type }
     );
 
-    const documents = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList)] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
+    let documents = await client.fetch(
+      `*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList) && (__i18n_lang == 'en' || __i18n_lang == "${locale}")] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
       { types: type }
     );
+
+    const filteredDocumentIds = documents.map(document => document.__i18n_base?._ref).filter(document => document !== undefined)
+    documents = documents.filter(document => !filteredDocumentIds.includes(document._id))
 
     const shouldProceed = this.isSafeToProceed(documents, this.state.field, { value, label });
 
