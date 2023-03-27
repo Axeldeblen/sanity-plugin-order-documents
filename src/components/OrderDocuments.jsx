@@ -198,6 +198,7 @@ class OrderDocuments extends React.Component {
                 refreshTypes={this.refreshTypes}
               />
               <DraggableSection
+                locale={this.state.locale}
                 documents={this.state.documents}
                 count={this.state.count}
                 type={this.state.type}

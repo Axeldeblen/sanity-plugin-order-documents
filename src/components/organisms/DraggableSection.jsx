@@ -5,10 +5,11 @@ import schema from "part:@sanity/base/schema";
 import styles from "../../index.css";
 import { Card } from "../molecules/Card";
 import RefreshIcon from "../atoms/RefreshIcon";
+import { LOCALE_META } from "../../data";
 
 class DraggableSection extends React.Component {
   render() {
-    const { documents, count, type, moveCard, refreshDocuments, loadMore } = this.props;
+    const { documents, count, type, moveCard, refreshDocuments, locale, loadMore } = this.props;
 
     if (!(type && type.value) && !documents.length) {
       return null;
@@ -36,18 +37,20 @@ class DraggableSection extends React.Component {
           </button>
         </div>
         <ul className={styles.orderDocumentsList}>
-          {documents.map((document, index) => (
-            <li key={document._id} className={styles.orderDocumentsListItem}>
-              <Card
-                key={document._id}
-                index={index}
-                id={document._id}
-                text={document.title}
-                moveCard={moveCard}
-                jsx={<Preview value={document} type={schema.get(document._type)} />}
-              />
-            </li>
-          ))}
+          {documents.map((document, index) => 
+            (document.__i18n_lang === locale.value || document.__i18n_lang === "en") && 
+                <li key={document._id} className={styles.orderDocumentsListItem}>
+                  <Card
+                    prefix={document.__i18n_lang === locale.value && document.__i18n_lang !== "en" ? `[${LOCALE_META[locale.value].name}]` : ""}
+                    key={document._id}
+                    index={index}
+                    id={document._id}
+                    text={document.title}
+                    moveCard={moveCard}
+                    jsx={<Preview value={document} type={schema.get(document._type)} />}
+                  />
+                </li>
+          )}
         </ul>
         {hasReachedEnd ? null : (
           <div className={styles.orderDocumentsButtonWrapper}>

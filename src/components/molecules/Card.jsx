@@ -14,7 +14,7 @@ const style = {
   alignItems: "center",
 };
 
-export const Card = ({ id, index, moveCard, jsx }) => {
+export const Card = ({ id, prefix, index, moveCard, jsx }) => {
   const ref = useRef(null);
 
   const [{ handlerId }, drop] = useDrop({
@@ -89,7 +89,7 @@ export const Card = ({ id, index, moveCard, jsx }) => {
 
   return (
     <div ref={ref} style={{ ...style, opacity }} data-handler-id={handlerId}>
-      <span style={{ paddingRight: "1rem" }}>{index + 1}.</span> {jsx}
+      <span style={{ paddingRight: "1rem" }}>{index + 1}. {prefix} </span> {jsx}
     </div>
   );
 };
