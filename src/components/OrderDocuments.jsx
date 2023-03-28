@@ -69,7 +69,7 @@ class OrderDocuments extends React.Component {
 
   refreshDocuments = async () => {
     const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types])`, { types: this.state.type.value, }); 
-    const documents = await client.fetch( `*[!(_id in path("drafts.**")) && _type == $types] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`, { types: this.state.type.value } );
+    const documents = await client.fetch(`*[!(_id in path("drafts.**")) && _type == $types] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`, { types: this.state.type.value } );
 
     this.setState({ documents, count });
 
