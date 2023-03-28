@@ -32,10 +32,9 @@ class OrderDocuments extends React.Component {
     const length = this.state.documents.length;
 
     const newDocuments = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types && ("${this.state.locale.value}" in languageList || "all" == languageList)] | order (${
-        this.state.field.value
-      } asc, order asc, _updatedAt desc)[${length}...${length + PAGE_SIZE}]`,
-      { types: this.state.type.value }
+      `*[!(_id in path("drafts.**")) && _type == $types] |
+      order (${this.state.field.value} asc, order asc, _updatedAt desc)[${length}...${length + PAGE_SIZE}]`, 
+      { types: this.state.type.value } 
     );
 
     const documents = [...this.state.documents, ...newDocuments];
@@ -69,14 +68,8 @@ class OrderDocuments extends React.Component {
   };
 
   refreshDocuments = async () => {
-    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && ("${this.state.locale.value}" in languageList || "all" == languageList)])`, {
-      types: this.state.type.value,
-    });
-
-    const documents = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types && ("${this.state.locale.value}" in languageList || "all" == languageList)] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
-      { types: this.state.type.value }
-    );
+    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types])`, { types: this.state.type.value, }); 
+    const documents = await client.fetch( `*[!(_id in path("drafts.**")) && _type == $types] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`, { types: this.state.type.value } );
 
     this.setState({ documents, count });
 
@@ -141,11 +134,9 @@ class OrderDocuments extends React.Component {
     }
   };
 
-  handleLocaleChange = ({ value, label }) => {
-    this.setState({ locale: { value, label } }, () => {
-      this.getFields();
-    });
-  }
+  handleLocaleChange = ({ value, label }) => 
+    this.setState({ locale: { value, label } }, () => { this.getFields() }
+  );
 
   handleFieldChange = async ({ value, label }) => {
     const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types])`, {

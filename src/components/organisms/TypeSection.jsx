@@ -74,9 +74,6 @@ class TypeSection extends React.Component {
           <p>
             <strong>Step 1: Choose a Language</strong>
           </p>
-          <button className={styles.orderDocumentsRefreshButton} onClick={refreshTypes}>
-            <RefreshIcon title="Refresh Types" />
-          </button>
         </div>
         <Select options={localeOptions} isSearchable onChange={handleLocaleChange} value={locale} />
         <div className={styles.orderDocumentsSubheading}>
