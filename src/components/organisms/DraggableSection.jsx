@@ -38,9 +38,10 @@ class DraggableSection extends React.Component {
         </div>
         <ul className={styles.orderDocumentsList}>
           {documents.map((document, index) => 
-            // (document.__i18n_lang === locale.value || document.__i18n_lang === "en") && 
-            // (document.languageList?.includes("all") || document.languageList?.includes(locale.value)) &&
-            // (!document.__i18n_refs?.some(ref => ref._key === locale.value)) &&
+            (type.value === 'promotionFresh') &&
+            (document.__i18n_lang === locale.value || document.__i18n_lang === "en") && 
+            (document.languageList?.includes("all") || document.languageList?.includes(locale.value)) &&
+            (!document.__i18n_refs?.some(ref => ref._key === locale.value)) &&
               <li key={index} className={styles.orderDocumentsListItem}>
                 <Card
                   prefix={document.__i18n_lang === locale.value && document.__i18n_lang !== "en" ? `[${LOCALE_META[locale.value].name}]` : ""}
