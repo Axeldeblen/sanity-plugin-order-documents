@@ -28,14 +28,25 @@ class OrderDocuments extends React.Component {
     this.getTypes();
   }
 
+  fetchDocuments = async ({ start, end, type, field }) => {
+    const selectedType = type ?? this.state.type.value;
+    const selectedField = field ?? this.state.field.value;
+    const filterByEnglish = selectedType === 'sponsorship' ? `&& __i18n_lang == "en"` : "";
+
+    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types ${filterByEnglish}])`, {
+      types: selectedType,
+    });
+    const documents = await client.fetch(
+      `*[!(_id in path("drafts.**")) && _type == $types ${filterByEnglish}] | order (${selectedField} asc, order asc, _updatedAt desc)[${start}...${end}]`,
+      { types: selectedType }
+    );
+    return { count, documents }
+  }
+
   loadMore = async () => {
     const length = this.state.documents.length;
 
-    const newDocuments = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types] |
-      order (${this.state.field.value} asc, order asc, _updatedAt desc)[${length}...${length + PAGE_SIZE}]`, 
-      { types: this.state.type.value } 
-    );
+    const { documents: newDocuments} = await this.fetchDocuments({ start: length, end: length + PAGE_SIZE})
 
     const documents = [...this.state.documents, ...newDocuments];
 
@@ -68,8 +79,7 @@ class OrderDocuments extends React.Component {
   };
 
   refreshDocuments = async () => {
-    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types])`, { types: this.state.type.value, }); 
-    const documents = await client.fetch(`*[!(_id in path("drafts.**")) && _type == $types] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`, { types: this.state.type.value } );
+    const { count, documents } = await this.fetchDocuments({ start: 0, end: PAGE_SIZE })
 
     this.setState({ documents, count });
 
@@ -97,8 +107,7 @@ class OrderDocuments extends React.Component {
   };
 
   handleTypeChange = async ({ value, label }) => {
-    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types])`, { types: value, }); 
-    const documents = await client.fetch( `*[!(_id in path("drafts.**")) && _type == $types] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`, { types: value } );
+    const { count, documents } = await this.fetchDocuments({ start: 0, end: PAGE_SIZE, type: value })
 
     const shouldProceed = this.isSafeToProceed(documents, this.state.field, { value, label });
 
@@ -139,14 +148,7 @@ class OrderDocuments extends React.Component {
   );
 
   handleFieldChange = async ({ value, label }) => {
-    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types])`, {
-      types: this.state.type.value,
-    });
-
-    const documents = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types] | order (${value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
-      { types: this.state.type.value }
-    );
+    const { count, documents } = await this.fetchDocuments({ start: 0, end: PAGE_SIZE, field: value })
 
     const shouldProceed = this.isSafeToProceed(documents, { value, label }, this.state.type);
 
