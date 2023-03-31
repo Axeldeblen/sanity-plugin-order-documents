@@ -25,6 +25,14 @@ class DraggableSection extends React.Component {
 
     const hasReachedEnd = documents.length === count;
 
+    const isDocumentDisplayed = (document) => {
+      if (type.value !== 'promotionFresh') return true;
+
+      return (document.__i18n_lang === locale.value || document.__i18n_lang === "en") &&
+        (document.languageList?.includes("all") || document.languageList?.includes(locale.value)) &&
+        (!document.__i18n_refs?.some(ref => ref._key === locale.value))
+    }
+
     return (
       <>
         <hr className={styles.orderDocumentsRule} />
@@ -38,10 +46,7 @@ class DraggableSection extends React.Component {
         </div>
         <ul className={styles.orderDocumentsList}>
           {documents.map((document, index) => 
-            (type.value === 'promotionFresh') &&
-            (document.__i18n_lang === locale.value || document.__i18n_lang === "en") && 
-            (document.languageList?.includes("all") || document.languageList?.includes(locale.value)) &&
-            (!document.__i18n_refs?.some(ref => ref._key === locale.value)) &&
+            isDocumentDisplayed(document) &&
               <li key={index} className={styles.orderDocumentsListItem}>
                 <Card
                   prefix={document.__i18n_lang === locale.value && document.__i18n_lang !== "en" ? `[${LOCALE_META[locale.value].name}]` : ""}
