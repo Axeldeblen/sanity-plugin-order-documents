@@ -1,15 +1,4 @@
-
-This project is forked from - https://github.com/BretCameron/sanity-plugin-order-documents
-
-it is intended to be used with sanity-plugin-intl-input when configured with config of 
-```json
-{
-    "idStructure": "delimiter",
-}
-```
-
 # sanity-plugin-order-documents
-
 
 Order your Sanity documents via drag-and-drop.
 

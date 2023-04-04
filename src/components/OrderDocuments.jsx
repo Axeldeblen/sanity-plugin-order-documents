@@ -32,9 +32,8 @@ class OrderDocuments extends React.Component {
     const length = this.state.documents.length;
 
     const newDocuments = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types && ("${this.state.locale.value}" in languageList || "all" == languageList)] | order (${
-        this.state.field.value
-      } asc, order asc, _updatedAt desc)[${length}...${length + PAGE_SIZE}]`,
+      `*[!(_id in path("drafts.**")) && _type == $types] | order (${this.state.field.value} asc, 
+        order asc, _updatedAt desc)[${length}...${length + PAGE_SIZE}]`,
       { types: this.state.type.value }
     );
 
@@ -69,12 +68,12 @@ class OrderDocuments extends React.Component {
   };
 
   refreshDocuments = async () => {
-    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && ("${this.state.locale.value}" in languageList || "all" == languageList)])`, {
+    const count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${this.state.locale.value}"])`, {
       types: this.state.type.value,
     });
 
     const documents = await client.fetch(
-      `*[!(_id in path("drafts.**")) && _type == $types && ("${this.state.locale.value}" in languageList || "all" == languageList)] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
+      `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${this.state.locale.value}"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
       { types: this.state.type.value }
     );
 
@@ -126,9 +125,6 @@ class OrderDocuments extends React.Component {
         `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
         { types: type }
       );
-
-      const filteredDocumentIds = documents.map(document => document.__i18n_base?._ref).filter(document => document !== undefined)
-      documents = documents.filter(document => !filteredDocumentIds.includes(document._id))
     } else {
       count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "en"])`, { types: value, }); 
       documents = await client.fetch( `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "en"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`, { types: value } );
