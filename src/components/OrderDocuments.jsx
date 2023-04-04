@@ -119,11 +119,11 @@ class OrderDocuments extends React.Component {
 
     if (type === 'promotionFresh') {
       count = await client.fetch(
-        `count(*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList) && (__i18n_lang == 'en' || __i18n_lang == "${locale}")])`, 
+        `count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}"])`, 
         { types: type }
       );
       documents = await client.fetch(
-        `*[!(_id in path("drafts.**")) && _type == $types && ("${locale}" in languageList || "all" in languageList) && (__i18n_lang == 'en' || __i18n_lang == "${locale}")] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
+        `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
         { types: type }
       );
 
