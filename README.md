@@ -9,3 +9,6 @@ it is intended to be used with sanity-plugin-intl-input when configured with con
 ```
 
 The requirements of this package have now been customized quite specifically for our project. Public use is not recommended 
+
+
+to release `$ yarn prepare && npm publish`

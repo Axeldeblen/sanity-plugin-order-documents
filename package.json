@@ -1,6 +1,6 @@
 {
   "name": "sanity-plugin-order-documents-intl-input",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "A Sanity Studio plugin that helps you order your documents via drag-and-drop with the document-internationalization plugin.",
   "main": "build/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "prepare": "yarn build",
     "lint": "eslint src/**/**"
   },
-  "homepage": "https://github.com/Axeldeblen/sanity-plugin-order-documents",
+  "homepage": "https://github.com/Axeldeblen/sanity-plugin-order-documents-intl-input",
   "bugs": {
     "url": "https://github.com/Axeldeblen/sanity-plugin-order-documents/issues",
     "email": "axel@easygo.io"
