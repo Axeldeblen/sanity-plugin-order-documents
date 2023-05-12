@@ -130,14 +130,7 @@ class OrderDocuments extends React.Component {
     );
 
     const shouldProceed = this.isSafeToProceed(documents, this.state.field, { value, label });
-
-    if (documents && documents.length > 0 === false) {
-      this.setState({
-        ...this.state,
-        error: `* No document found for "${localeLabel}" language and "${typeLabel}" type.`
-      })
-    }
-
+    
     if (documents && documents.length > 0 && shouldProceed) {
       // check if the first document has no order field
       const firstDocument = documents[0];
@@ -167,6 +160,11 @@ class OrderDocuments extends React.Component {
       if (documents.length > 0) {
         await setListOrder(documents, this.state.field.value);
       }
+    } else {
+      this.setState({
+        ...this.state,
+        error: `* No document found for "${localeLabel}" language and "${typeLabel}" type.`
+      })
     }
   };
 
