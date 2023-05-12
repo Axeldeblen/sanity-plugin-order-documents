@@ -50,7 +50,6 @@ class OrderDocuments extends React.Component {
     this.setState({ types });
   };
 
-
   getFields = () => {
     const { type, types } = this.state;
 
