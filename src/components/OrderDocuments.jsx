@@ -18,6 +18,7 @@ class OrderDocuments extends React.Component {
     count: 0,
     documents: [],
     types: [],
+    error: "",
     type: { label: "", value: "" },
     locale: { label: "English", value: "en" },
     field: { label: DEFAULT_FIELD_LABEL, value: DEFAULT_FIELD_VALUE },
@@ -104,7 +105,10 @@ class OrderDocuments extends React.Component {
 
   handleDropdownChange = async ({ fieldName, value, label }) => {
     const type = fieldName === 'locale' ? this.state.type.value : value
+    const typeLabel = fieldName === 'locale' ? this.state.type.label : label
+
     const locale = fieldName === 'locale' ? value : this.state.locale.value;
+    const localeLabel = fieldName === 'locale' ? label : this.state.locale.label;
     
     if (type === '') {
       this.setState({ [fieldName]: { value, label } }, () => {
@@ -116,22 +120,17 @@ class OrderDocuments extends React.Component {
     let count;
     let documents;
 
-    if (type === 'promotionFresh') {
-      count = await client.fetch(
-        `count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}" && isDisplayed != false])`, 
-        { types: type }
-      );
-      documents = await client.fetch(
-        `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}" && isDisplayed != false] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
-        { types: type }
-      );
-    } else {
-      count = await client.fetch(`count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "en"])`, { types: value, }); 
-      documents = await client.fetch( `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "en"] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`, { types: value } );
-    }
+    count = await client.fetch(
+      `count(*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}" && isDisplayed != false])`, 
+      { types: type }
+    );
+    documents = await client.fetch(
+      `*[!(_id in path("drafts.**")) && _type == $types && __i18n_lang == "${locale}" && isDisplayed != false] | order (${this.state.field.value} asc, order asc, _updatedAt desc)[0...${PAGE_SIZE}]`,
+      { types: type }
+    );
 
     const shouldProceed = this.isSafeToProceed(documents, this.state.field, { value, label });
-
+    
     if (documents && documents.length > 0 && shouldProceed) {
       // check if the first document has no order field
       const firstDocument = documents[0];
@@ -154,13 +153,18 @@ class OrderDocuments extends React.Component {
         }
       }
 
-      this.setState({ [fieldName]: { value, label }, documents, count }, () => {
+      this.setState({ [fieldName]: { value, label }, documents, count, error: "" }, () => {
         this.getFields();
       });
 
       if (documents.length > 0) {
         await setListOrder(documents, this.state.field.value);
       }
+    } else {
+      this.setState({
+        ...this.state,
+        error: `* No document found for "${localeLabel}" language and "${typeLabel}" type.`
+      })
     }
   };
 
@@ -213,6 +217,7 @@ class OrderDocuments extends React.Component {
                 handleFieldChange={this.handleFieldChange}
                 refreshTypes={this.refreshTypes}
               />
+              <div className={styles.error}>{this.state.error}</div>
               <DraggableSection
                 documents={this.state.documents}
                 count={this.state.count}

@@ -166,3 +166,9 @@
   display: flex;
   justify-content: center;
 }
+
+.error {
+  display: flex;
+  color: red;
+  margin-top: 8px;
+}
